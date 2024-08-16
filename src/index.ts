@@ -9,4 +9,6 @@ export {
   UseAuthorEventsParams,
   useFetchFeed,
   UseFetchFeedParams,
+  useFetchProfile,
+  UseFetchProfileParams,
 };
