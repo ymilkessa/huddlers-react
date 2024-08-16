@@ -1,6 +1,6 @@
 import React from "react";
 import { Event } from "huddlers";
-import useAuthorEvents from "../src/useAuthorEvents";
+import useFetchAuthorEvents from "../src/useFetchAuthorEvents";
 import useFetchFeed from "../src/useFetchFeed";
 import useFetchProfile from "../src/useFetchProfile";
 
@@ -50,9 +50,8 @@ const TestEventsBox = ({
 export const EventsByAuthorTestBox: React.FC<{ pubkey: string }> = ({
   pubkey,
 }) => {
-  const { events, profiles, loading, error, loadOlderEvents } = useAuthorEvents(
-    { pubkey }
-  );
+  const { events, profiles, loading, error, loadOlderEvents } =
+    useFetchAuthorEvents({ pubkey });
 
   return (
     <>

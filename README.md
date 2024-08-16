@@ -37,7 +37,7 @@ export const ShowUserProfile = () => {
 };
 ```
 
-## `useAuthorEvents`
+## `useFetchAuthorEvents`
 
 Fetches the events authored by a given public key.
 
@@ -52,10 +52,10 @@ Here is an example.
 
 ```tsx
 import React from "react";
-import { useAuthorEvents } from "huddlers-react";
+import { useFetchAuthorEvents } from "huddlers-react";
 
 export const ShowAuthorEvents = () => {
-  const { events, profiles, loading, error } = useAuthorEvents({
+  const { events, profiles, loading, error } = useFetchAuthorEvents({
     pubkey: "some-public-key",
   });
 
@@ -79,7 +79,7 @@ export const ShowAuthorEvents = () => {
 
 This hook loads the feed for logged-in users. The main argument for this hook is a user public key.
 
-It returns the same states as the `useAuthorEvents` hook:
+It returns the same states as the `useFetchAuthorEvents` hook:
 
 1. `events`
 2. `profiles`
@@ -92,7 +92,7 @@ This uses [fetchUserFeed](https://github.com/ymilkessa/huddlers-js#fetchuserfeed
 
 All three hooks can receive an optional `url` argument, which specifies the URL to use for interfacing with the cache. The default url is the same one used in the [huddlers js library](https://www.npmjs.com/package/huddlers).
 
-Meanwhile, both `useFetchFeed` and `useAuthorEvents` can accept the following optional arguments:
+Meanwhile, both `useFetchFeed` and `useFetchAuthorEvents` can accept the following optional arguments:
 
 - `kinds`: An array of event kinds to fetch. An empty array means the API should return all kinds. The default is an empty array.
 - `limit`: The maximum number of events to fetch. The default is 20.

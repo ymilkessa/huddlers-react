@@ -6,6 +6,18 @@ export type UseFetchProfileParams = {
   url?: string;
 };
 
+/**
+ * Returns the kind-0 (profile metadata) event for a given pubkey.
+ *
+ * @param params
+ *  - pubkey: The pubkey of the author whose profile to fetch.
+ *  - url (optional): The Huddlers API URL to use (defaults to the main api url).
+ *
+ * @returns
+ * - profile: The profile event.
+ * - loading: A boolean indicating if the profile is being fetched.
+ * - error: An error that occurred while fetching the profile.
+ */
 const useFetchProfile = (params: UseFetchProfileParams) => {
   const memoizedParams = useMemo(
     () => ({

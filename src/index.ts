@@ -1,8 +1,10 @@
-import useAuthorEvents, { UseAuthorEventsParams } from "./useAuthorEvents";
+import useFetchAuthorEvents, {
+  UseAuthorEventsParams,
+} from "./useFetchAuthorEvents";
 import useFetchFeed, { UseFetchFeedParams } from "./useFetchFeed";
 
 export {
-  useAuthorEvents,
+  useFetchAuthorEvents,
   UseAuthorEventsParams,
   useFetchFeed,
   UseFetchFeedParams,

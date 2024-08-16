@@ -8,7 +8,16 @@ export type UseFetchFeedParams = {
   until?: number;
   initialLimit?: number;
 };
-
+/**
+ * Fetches the feed of Nostr events for a given subscriber. It returns the events, profiles, loading state, and error.
+ *
+ * @param params
+ *  - pubkey: The pubkey of the author to fetch events for.
+ *  - url (optional): The URL of the Huddlers api.
+ *  - kinds (optional): The kinds of events to fetch.
+ *  - until (optional): Fetch events until this timestamp.
+ *  - initialLimit (optional): The initial number of events to fetch.
+ */
 const useFetchFeed = (params: UseFetchFeedParams) => {
   const memoizedParams = useMemo(
     () => ({
