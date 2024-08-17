@@ -11,13 +11,13 @@ export type UseAuthorEventsParams = {
 
 /**
  * Fetches events by author and returns the events, profiles, loading state, and error.
- *
  * @param params
  *  - pubkey: The pubkey of the author to fetch events for.
  *  - url (optional): The Huddlers API URL to use (defaults to the main api url).
  *  - kinds (optional): The Nostr event kinds to fetch.
  *  - until (optional): Fetch events until this timestamp.
  *  - initialLimit (optional): The initial number of events to fetch.
+ * @returns An object containing the events, profiles, loading state, error, clearError function, clearAll function, and loadOlderEvents function.
  */
 const useFetchAuthorEvents = (params: UseAuthorEventsParams) => {
   const memoizedParams = useMemo(

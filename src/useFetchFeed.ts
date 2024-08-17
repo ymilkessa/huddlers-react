@@ -17,6 +17,8 @@ export type UseFetchFeedParams = {
  *  - kinds (optional): The kinds of events to fetch.
  *  - until (optional): Fetch events until this timestamp.
  *  - initialLimit (optional): The initial number of events to fetch.
+ *
+ * @returns An object containing the events, profiles, loading state, error, clearError function, clearAll function, and loadOlderEvents function.
  */
 const useFetchFeed = (params: UseFetchFeedParams) => {
   const memoizedParams = useMemo(

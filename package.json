@@ -1,6 +1,6 @@
 {
   "name": "huddlers-react",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Hooks that use the huddlers api for fetching content from Nostr relays",
   "main": "dist/index.js",
   "scripts": {
