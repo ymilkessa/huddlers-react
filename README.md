@@ -1,6 +1,8 @@
 # huddlers-react
 
-A collection of hooks for safely loading organized events and profiles from the Huddlers API. This acts as a useful React.js wrapper for the [huddlers javascript library](https://www.npmjs.com/package/huddlers).
+[![npm version](https://badge.fury.io/js/huddlers-react.svg)](https://badge.fury.io/js/huddlers-react)
+
+A collection of React hooks for safely loading Nostr events using the Huddlers API.
 
 ## Installation
 
@@ -8,108 +10,269 @@ A collection of hooks for safely loading organized events and profiles from the 
 npm install huddlers-react
 ```
 
-## `useFetchProfile`
+## Available Hooks
 
-This hook returns three states:
+### useFetchProfile
 
-1. `profile`: The latest available kind-0 (profile metadata) event that corresponds to the given public key.
-2. `loading`: A boolean that indicates whether the hook is currently fetching the profile.
-3. `error`: An error object that contains the error message if the hook fails to fetch the profile.
+Fetches the profile metadata for a given public key.
 
-Here is an example.
+#### Parameters
+
+- `pubkey`: The public key of the user whose profile to fetch.
+- `url` (optional): The URL to use for interfacing with the cache.
+
+#### Returns
+
+- `profile`: The latest available kind-0 (profile metadata) event.
+- `loading`: A boolean indicating if the fetch is in progress.
+- `error`: An error object if the fetch fails.
+
+#### Example
 
 ```tsx
-import React from "react";
 import { useFetchProfile } from "huddlers-react";
 
-export const ShowUserProfile = () => {
-  const { profile, loading, error } = useFetchProfile({
-    pubkey: "some-public-key",
-  });
+const ProfileComponent = ({ pubkey }) => {
+  const { profile, loading, error } = useFetchProfile({ pubkey });
 
-  return (
-    <>
-      {loading ? <div>Loading...</div> : null}
-      {error ? <div>Error: {error.message}</div> : null}
-      {profile ? <div>Profile: {profile.id}</div> : null}
-    </>
-  );
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (profile) return <div>Profile: {profile.id}</div>;
+  return null;
 };
 ```
 
-## `useFetchAuthorEvents`
+### useFetchEventsByAuthor
 
-Fetches the events authored by a given public key.
+Fetches events authored by a given public key.
 
-It returns the following states and methods:
+#### Parameters
 
-1. `events`: An array of events authored by the given public key, in reverse chronological order.
-2. `profiles`: A map of public keys to their corresponding profile metadata events. This contains the profile of specified pubkey, as well as the author profiles of events reposted by the specified pubkey.
-3. `loading`: A boolean that indicates whether the hook is currently fetching more events
-4. `error`: An error object that contains the error message if the hook fails to fetch the events.
-5. `loadOlderEvents`: Fetches a specified number of events that precede the last event in the `events` array. More on this below.
+- `pubkey`: The public key of the author.
+- `url` (optional): The URL to use for interfacing with the cache.
+- `kinds` (optional): An array of event kinds to fetch.
+- `limit` (optional): The maximum number of events to fetch (default: 20).
+- `until` (optional): The timestamp of the last event fetched.
 
-Here is an example.
+#### Returns
+
+- `events`: An array of events authored by the given public key.
+- `profiles`: A map of public keys to their corresponding profile metadata events.
+- `loading`: A boolean indicating if the fetch is in progress.
+- `error`: An error object if the fetch fails.
+- `loadOlderEvents`: A function to fetch events older than the last event that was fetched.
+
+#### Example
 
 ```tsx
-import React from "react";
-import { useFetchAuthorEvents } from "huddlers-react";
+import { useFetchEventsByAuthor } from "huddlers-react";
 
-export const ShowAuthorEvents = () => {
-  const { events, profiles, loading, error } = useFetchAuthorEvents({
-    pubkey: "some-public-key",
-  });
+const AuthorEventsComponent = ({ pubkey }) => {
+  const { events, profiles, loading, error, loadOlderEvents } =
+    useFetchEventsByAuthor({ pubkey });
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <>
-      {loading ? <div>Loading...</div> : null}
-      {error ? <div>Error: {error.message}</div> : null}
+    <div>
       {events.map((event) => (
         <div key={event.id}>
           <div>Event: {event.id}</div>
-          <div>Profile Event: {profiles[event.pubkey]?.id}</div>
+          <div>Author Metadata: {profiles[event.pubkey]?.content}</div>
           <div>Content: {event.content}</div>
         </div>
       ))}
-    </>
+      <button onClick={() => loadOlderEvents()}>Load More</button>
+    </div>
   );
 };
 ```
 
-## `useFetchFeed`
+### useFetchFeed
 
-This hook loads the feed for logged-in users. The main argument for this hook is a user public key.
+Loads the feed for any Nostr user.
 
-It returns the same states as the `useFetchAuthorEvents` hook:
+#### Parameters
 
-1. `events` - array of events
-2. `profiles` - a record of profiles
-3. `loading` - a boolean flag for when the hook is fetching events
-4. `error` - an error flag
-5. `loadOlderEvents` function
+- `pubkey`: The public key of the logged-in user.
+- `url` (optional): The URL to use for interfacing with the cache.
+- `kinds` (optional): An array of event kinds to fetch.
+- `limit` (optional): The maximum number of events to fetch (default: 20).
+- `until` (optional): The timestamp of the last event fetched.
 
-This uses [fetchUserFeed](https://github.com/ymilkessa/huddlers-js#fetchuserfeed) function, which calls the `/feed` endpoint of the Huddlers API.
+#### Returns
+
+- `events`: An array of events in the user's feed.
+- `profiles`: A map of public keys to their corresponding profile metadata events.
+- `loading`: A boolean indicating if the fetch is in progress.
+- `error`: An error object if the fetch fails.
+- `loadOlderEvents`: A function to fetch older events.
+
+#### Example
+
+```tsx
+import { useFetchFeed } from "huddlers-react";
+
+const FeedComponent = ({ userPubkey }) => {
+  const { events, profiles, loading, error, loadOlderEvents } = useFetchFeed({
+    pubkey: userPubkey,
+  });
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div>
+      {events.map((event) => (
+        <div key={event.id}>
+          <div>Event: {event.id}</div>
+          <div>Author Metadata: {profiles[event.pubkey]?.content}</div>
+          <div>Content: {event.content}</div>
+        </div>
+      ))}
+      <button onClick={() => loadOlderEvents()}>Load More</button>
+    </div>
+  );
+};
+```
+
+### useFetchThread
+
+Fetches the reply events under a given Nostr event.
+
+#### Parameters
+
+- `id`: The ID of the event to fetch the thread for.
+- `url` (optional): The URL to use for interfacing with the cache.
+
+#### Returns
+
+- `events`: An array of reply events.
+- `profiles`: The profiles of the authors of the fetched reply events, keyed by pubkey.
+- `loading`: A boolean indicating if the fetch is in progress.
+- `error`: An error object if the fetch fails.
+
+#### Example
+
+```tsx
+import { useFetchThread } from "huddlers-react";
+
+const ThreadComponent = ({ eventId }) => {
+  const { events, profiles, loading, error } = useFetchThread({ id: eventId });
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div>
+      <div>Total replies: {events.length}</div>
+      {events.map((event) => (
+        <div key={event.id}>
+          <div>Reply: {event.id}</div>
+          <div>Author Metadata: {profiles[event.pubkey]?.content}</div>
+          <div>Content: {event.content}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+### useFetchRoot
+
+Fetches the chain of events in a reply thread up to a given event.
+
+#### Parameters
+
+- `id`: The ID of the event whose ancestor events to fetch.
+- `url` (optional): The URL to use for interfacing with the cache.
+
+#### Returns
+
+- `events`: An ordered array of ancestor events, starting with the root event.
+- `profiles`: The profiles of the authors of the fetched events, keyed by pubkey.
+- `loading`: A boolean indicating if the fetch is in progress.
+- `error`: An error object if the fetch fails.
+
+#### Example
+
+```tsx
+import { useFetchRoot } from "huddlers-react";
+
+const RootChainComponent = ({ eventId }) => {
+  const { events, profiles, loading, error } = useFetchRoot({ id: eventId });
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div>
+      <div>Root event: {events[0]?.id}</div>
+      <div>Total events in chain: {events.length}</div>
+    </div>
+  );
+};
+```
+
+### useFetchEvent
+
+Fetches a single event by its ID.
+
+#### Parameters
+
+- `id`: The ID of the event to fetch.
+- `url` (optional): The URL to use for interfacing with the cache.
+
+#### Returns
+
+- `event`: The fetched event.
+- `loading`: A boolean indicating if the fetch is in progress.
+- `error`: An error object if the fetch fails.
+
+#### Example
+
+```tsx
+import { useFetchEvent } from "huddlers-react";
+
+const SingleEventComponent = ({ eventId }) => {
+  const { event, loading, error } = useFetchEvent({ id: eventId });
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!event) return <div>Event not found</div>;
+
+  return (
+    <div>
+      <div>Event ID: {event.id}</div>
+      <div>Content: {event.content}</div>
+    </div>
+  );
+};
+```
 
 ## Optional Arguments
 
-All three hooks can receive an optional `url` argument, which specifies the URL to use for interfacing with the cache. The default url is the same one used in the [huddlers js library](https://www.npmjs.com/package/huddlers).
+All hooks can receive an optional `url` argument, which specifies the URL to use for interfacing with the cache. The default URL is the same one used in the [huddlers js library](https://www.npmjs.com/package/huddlers).
 
-Meanwhile, both `useFetchFeed` and `useFetchAuthorEvents` can accept the following optional arguments:
+`useFetchFeed` and `useFetchEventsByAuthor` accept additional optional arguments:
 
 - `kinds`: An array of event kinds to fetch. An empty array means the API should return all kinds. The default is an empty array.
 - `limit`: The maximum number of events to fetch. The default is 20.
 - `until`: The timestamp of the last event fetched. This is useful for pagination.
 
-## `loadOlderEvents`
+## loadOlderEvents Function
+
+The `loadOlderEvents` function is available in `useFetchFeed` and `useFetchEventsByAuthor`. It updates the `events` and `profiles` states by fetching and adding the events that came before the last event in the `events` array.
 
 Parameter:
 
 - `limit`: The maximum number of events to fetch. The default is 20.
 
-This function updates the `events` and `profiles` states by fetching and adding the events that came before the last event in the `events` array.
+## Example Usage
 
-## Example
+A demo of these hooks is available on the [Huddlers website](https://huddlers.dev/profile/82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2). This page uses the `useFetchEventsByAuthor` hook to retrieve events by Jack Dorsey. The "Load More" button at the bottom of the page invokes the `loadOlderEvents` function when clicked.
 
-A demo of these hooks is available on the Huddlers website. [This page](https://huddlers.dev/profile/82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2) for example, uses the `useFetchAuthorEvents` hook to retrieve events by Jack Dorsey.
+## License
 
-If you scroll to the bottom of the page, there is a "Load More" button. This button simply invokes the `loadOlderEvents` function when clicked. The rest of the page re-renders automatically as the new events are included in the `events` array.
+This project is licensed under the ISC License.

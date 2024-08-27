@@ -1,8 +1,11 @@
 import React from "react";
 import { Event } from "huddlers";
-import useFetchAuthorEvents from "../src/useFetchAuthorEvents";
+import useFetchEventsByAuthor from "../src/useFetchEventsByAuthor";
 import useFetchFeed from "../src/useFetchFeed";
 import useFetchProfile from "../src/useFetchProfile";
+import useFetchRoot from "../src/useFetchRoot";
+import useFetchThread from "../src/useFetchThread";
+import useFetchEvent from "../src/useFetchEvent";
 
 export type TestEventsBoxProps = {
   events: Event[];
@@ -51,7 +54,7 @@ export const EventsByAuthorTestBox: React.FC<{ pubkey: string }> = ({
   pubkey,
 }) => {
   const { events, profiles, loading, error, loadOlderEvents } =
-    useFetchAuthorEvents({ pubkey });
+    useFetchEventsByAuthor({ pubkey });
 
   return (
     <>
@@ -103,6 +106,54 @@ export const ShowUserProfile: React.FC<{ pubkey: string }> = ({ pubkey }) => {
       {loading ? <div>Loading...</div> : null}
       {error ? <div>Error: {error.message}</div> : null}
       {profile ? <div>Profile: {profile.id}</div> : null}
+    </>
+  );
+};
+
+export const ShowRootChain: React.FC<{ id: string }> = ({ id }) => {
+  const { events, loading, error } = useFetchRoot({ id });
+  return (
+    <>
+      {loading ? <div>Loading...</div> : null}
+      {error ? <div>Error: {error.message}</div> : null}
+      {events.length > 0 ? (
+        <>
+          <div>Root event: {events[0].id}</div>
+          <div>Total events: {events.length}</div>
+        </>
+      ) : null}
+    </>
+  );
+};
+
+export const ShowThreadOfEvents: React.FC<{ id: string }> = ({ id }) => {
+  const { events, loading, error } = useFetchThread({ id });
+  return (
+    <>
+      {loading ? <div>Loading...</div> : null}
+      {error ? <div>Error: {error.message}</div> : null}
+      {events.length > 0 ? (
+        <>
+          <div>Total replies: {events.length}</div>
+          <div>First reply: {events[0].id}</div>
+        </>
+      ) : null}
+    </>
+  );
+};
+
+export const ShowSingleEvent: React.FC<{ id: string }> = ({ id }) => {
+  const { event, loading, error } = useFetchEvent({ id });
+  return (
+    <>
+      {loading ? <div>Loading...</div> : null}
+      {error ? <div>Error: {error.message}</div> : null}
+      {event ? (
+        <>
+          <div>Event ID: {event.id}</div>
+          <div>Content: {event.content}</div>
+        </>
+      ) : null}
     </>
   );
 };

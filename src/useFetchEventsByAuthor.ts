@@ -19,7 +19,7 @@ export type UseAuthorEventsParams = {
  *  - initialLimit (optional): The initial number of events to fetch.
  * @returns An object containing the events, profiles, loading state, error, clearError function, clearAll function, and loadOlderEvents function.
  */
-const useFetchAuthorEvents = (params: UseAuthorEventsParams) => {
+const useFetchEventsByAuthor = (params: UseAuthorEventsParams) => {
   const memoizedParams = useMemo(
     () => ({
       pubkey: params.pubkey,
@@ -125,4 +125,10 @@ const useFetchAuthorEvents = (params: UseAuthorEventsParams) => {
   };
 };
 
-export default useFetchAuthorEvents;
+/**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ * Please use `newFunctionName` instead.
+ */
+export const useFetchAuthorEvents = useFetchEventsByAuthor;
+
+export default useFetchEventsByAuthor;
