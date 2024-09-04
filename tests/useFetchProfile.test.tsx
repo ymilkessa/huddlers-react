@@ -65,4 +65,35 @@ describe("useFetchProfile", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("should update profile when pubkey changes", async () => {
+    const initialPubkey = "initial_pubkey";
+    const updatedPubkey = "updated_pubkey";
+    const initialProfile = { ...mockProfile, pubkey: initialPubkey };
+    const updatedProfile = { ...mockProfile, pubkey: updatedPubkey };
+
+    (fetchUserProfile as jest.Mock).mockResolvedValue({
+      profile: initialProfile,
+    });
+
+    const { rerender } = render(<ShowUserProfile pubkey={initialPubkey} />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(`Profile: ${initialProfile.id}`)
+      ).toBeInTheDocument();
+    });
+
+    (fetchUserProfile as jest.Mock).mockResolvedValue({
+      profile: updatedProfile,
+    });
+
+    rerender(<ShowUserProfile pubkey={updatedPubkey} />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(`Profile: ${updatedProfile.id}`)
+      ).toBeInTheDocument();
+    });
+  });
 });

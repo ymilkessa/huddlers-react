@@ -37,8 +37,9 @@ const useFetchProfile = (params: UseFetchProfileParams) => {
     setError(null);
   }, [setLoading, setError, setProfile]);
 
-  const getProfile = useCallback(async (pubkey: string, url?: string) => {
+  const getProfile = useCallback(async () => {
     setLoading(true);
+    const { pubkey, url } = memoizedParams;
     try {
       const fetchParams: FetchProfileParams = {
         pubkey,
@@ -51,11 +52,11 @@ const useFetchProfile = (params: UseFetchProfileParams) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [memoizedParams]);
 
   useEffect(() => {
     clearAll();
-    getProfile(memoizedParams.pubkey, memoizedParams.url);
+    getProfile();
   }, [clearAll, getProfile]);
 
   return {

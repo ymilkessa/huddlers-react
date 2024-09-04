@@ -127,7 +127,7 @@ const useFetchEventsByAuthor = (params: UseAuthorEventsParams) => {
 
 /**
  * @deprecated This function is deprecated and will be removed in future versions.
- * Please use `newFunctionName` instead.
+ * Please use `useFetchEventsByAuthor` instead.
  */
 export const useFetchAuthorEvents = useFetchEventsByAuthor;
 
